@@ -5,27 +5,41 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo 'Build stage'
-                // sh 'mvn clean compile'
-            }
-        }
-        stage('Unit Tests') {
-    steps {
-        bat 'mvn test'
-    }
-}
-
-
-        stage('Docker Image Build') {
-            steps {
-                echo 'Docker build stage'
-                // sh 'docker build -t myapp:latest .'
+                bat 'dir'
+                bat 'if not exist index.html exit 1'
             }
         }
 
-        stage('Deploy') {
+        stage('Docker Image') {
             steps {
-                echo 'Deploy stage'
+                bat "docker build -t amazon-clone:%BUILD_NUMBER% ."
+            }
+        }
+
+        stage('Deploy to Dev') {
+            steps {
+                bat '''
+                docker stop amazon-dev || exit 0
+                docker rm amazon-dev || exit 0
+                docker run -d -p 8080:80 --name amazon-dev amazon-clone:%BUILD_NUMBER%
+                '''
+            }
+        }
+
+        stage('Manual Approval') {
+            steps {
+                input message: 'Approve deployment to Production?',
+                      ok: 'Deploy'
+            }
+        }
+
+        stage('Deploy to Prod') {
+            steps {
+                bat '''
+                docker stop amazon-prod || exit 0
+                docker rm amazon-prod || exit 0
+                docker run -d -p 80:80 --name amazon-prod amazon-clone:%BUILD_NUMBER%
+                '''
             }
         }
     }

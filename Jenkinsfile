@@ -21,7 +21,7 @@ pipeline {
                 bat '''
                 docker stop amazon-dev || exit 0
                 docker rm amazon-dev || exit 0
-                docker run -d -p 8080:80 --name amazon-dev amazon-clone:%BUILD_NUMBER%
+                docker run -d -p 8081:80 --name amazon-dev amazon-clone:%BUILD_NUMBER%
                 '''
             }
         }
@@ -38,7 +38,7 @@ pipeline {
                 bat '''
                 docker stop amazon-prod || exit 0
                 docker rm amazon-prod || exit 0
-                docker run -d -p 80:80 --name amazon-prod amazon-clone:%BUILD_NUMBER%
+                docker run -d -p 81:80 --name amazon-prod amazon-clone:%BUILD_NUMBER%
                 '''
             }
         }

@@ -9,13 +9,12 @@ pipeline {
                 // sh 'mvn clean compile'
             }
         }
+        stage('Unit Tests') {
+    steps {
+        bat 'mvn test'
+    }
+}
 
-        stage('Test') {
-            steps {
-                echo 'Test stage'
-                // sh 'mvn test'
-            }
-        }
 
         stage('Docker Image Build') {
             steps {
